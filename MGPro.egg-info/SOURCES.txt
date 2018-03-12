@@ -1,0 +1,10 @@
+setup.py
+MGPro.egg-info/PKG-INFO
+MGPro.egg-info/SOURCES.txt
+MGPro.egg-info/dependency_links.txt
+MGPro.egg-info/not-zip-safe
+MGPro.egg-info/requires.txt
+MGPro.egg-info/top_level.txt
+mgpro/__init__.py
+mgpro/expand.py
+mgpro/mgmat.py
