@@ -8,3 +8,4 @@ MGPro.egg-info/top_level.txt
 mgpro/__init__.py
 mgpro/expand.py
 mgpro/mgmat.py
+mgpro/mgui.py

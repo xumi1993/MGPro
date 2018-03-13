@@ -58,13 +58,12 @@ class mgmat(object):
             * np.exp(h * np.sqrt(((col_mesh - col0)*dom_col)**2+((row_mesh - row0)*dom_row)**2))
         self.result = np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
 
-    def pltmap(self, breakpoint=None):
-        fig = plt.figure()
-        pcm = plt.pcolor(self.result, 
+    def pltmap(self, fig, data, breakpoint=None):
+        ax = fig.subplots()
+        pcm = ax.pcolor(data, 
                          cmap='jet', 
                          norm=JetNormalize(midpoint=breakpoint))
         fig.colorbar(pcm, extend='both')
-        return fig
 
 if __name__ == '__main__':
     filename = 'C:\\Users\\zxuxmij\\Documents\\MGPro\\mag_test.dat'

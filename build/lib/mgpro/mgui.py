@@ -6,7 +6,9 @@ Created on Tue Mar 13 12:54:06 2018
 """
 
 import sys
+import os
 import numpy as np
+from mgpro.mgmat import mgmat
 from PyQt5.QtWidgets import QMainWindow, QApplication, \
                     QAction, QMenu, QFileDialog, QGridLayout,QLineEdit, QLabel, \
                     QWidget, QHBoxLayout, QPushButton, QVBoxLayout
@@ -22,7 +24,8 @@ class MGProUI(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        # self.opts = opts()
+        self.opts = opts()
+        self.mg = None
         self.initUI()     
         
     def initUI(self):  
@@ -42,35 +45,43 @@ class MGProUI(QMainWindow):
         self.fileEdit.move(100, 40)
         self.fileEdit.textChanged[str].connect(self.onChanged)
         
+        self.draw_raw_data_Button = QPushButton('Draw Data', self)
+        self.draw_raw_data_Button.move(420, 40)
+        self.draw_raw_data_Button.clicked[bool].connect(self.draw_raw_data)
+        
         self.figWid = QWidget(self)
         self.figWid.resize(570, 300)
         self.figWid.move(30, 80)
         layout = QVBoxLayout(self.figWid)
         self.figWid.setLayout(layout)
         
-        static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        layout.addWidget(static_canvas)
-        self.ax = static_canvas.figure.subplots()
-        t = np.linspace(0, 10, 501)
-        self.ax.plot(t, np.tan(t), ".")
-        
-        '''
-        self.ax = static_canvas.figure.subplots()
-        t = np.linspace(0, 10, 501)
-        self.ax.plot(t, np.tan(t), ".")
-        '''
+        self.raw_canvas = FigureCanvas(Figure(figsize=(5, 5)))
+        layout.addWidget(self.raw_canvas)
+
         # self.grid.addWidget(static_canvas,2,0)
         # self.statusBar().showMessage('Ready')
-        self.setGeometry(300, 300, 600, 400)
+        self.setGeometry(300, 300, 1000, 800)
         self.setWindowTitle('MGPro')    
         self.show()
     
     def importFile(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open grid dat file', '/home')
+        fname = QFileDialog.getOpenFileName(self, 'Open grid dat file', 
+                                            os.path.expanduser)
         self.opts.fname = fname[0]
+        self.fileEdit.setText(self.opts.fname)
+        self.mg = mgmat(self.opts.fname)
         
     def onChanged(self, text):
         self.opts.fname = text
+        
+    def draw_raw_data(self):
+        if isinstance(self.mg, mgmat):
+            ax_raw = self.raw_canvas.figure.subplots()
+            pcm = ax_raw.pcolor(self.mg.data, 
+                         cmap='jet') 
+                         #norm=JetNormalize(midpoint=breakpoint))
+            self.raw_canvas.colorbar(pcm, extend='both')
+            #self.mg.pltmap(self.raw_canvas.figure)
     
     
 if __name__ == '__main__':
