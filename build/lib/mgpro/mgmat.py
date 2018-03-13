@@ -35,12 +35,14 @@ class mgmat(object):
             * np.exp(h * np.sqrt(((col_mesh - col0)*dom_col)**2+((row_mesh - row0)*dom_row)**2))
         return np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
 
-    # [self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
-
+    def pltmap(self, data):
+        fig = plt.figure()
+        pcm = plt.pcolor(data, cmap='jet')
+        fig.colorbar(pcm, extend='both')
+        fig.show()
 
 if __name__ == '__main__':
-    filename = '../mag_test.dat'
+    filename = 'mag_test.dat'
     mg = mgmat(filename)
     dc10 = mg.continuation(-0.01, 1)
-    plt.pcolor(dc10)
-    plt.show()
+    mg.pltmap(dc10)

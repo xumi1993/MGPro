@@ -1,7 +1,26 @@
 import numpy as np
 from mgpro import expand
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
+
+
+class JetNormalize(colors.Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        if midpoint is None:
+            self.midpoint = [0.2, 0.4, 0.6, 0.8]
+        else:
+            try:
+                self.midpoint = list(midpoint)
+            except Exception as e:
+                raise ValueError(e)
+        colors.Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+        x, y = [self.vmin] + self.midpoint + [self.vmax], np.linspace(0, 1, len(self.midpoint)+2)
+        return np.ma.masked_array(np.interp(value, x, y))
 
 
 class mgmat(object):
@@ -21,8 +40,12 @@ class mgmat(object):
                 m += 1
         self.data_expand, self.row_begin, self.row_end, self.col_begin, self.col_end = expand.expand(self.data)
         self.data_sf = fftshift(fft2(self.data_expand))
+        self.h = None
+        self.order = None
 
     def continuation(self, h, order):
+        self.h = h
+        self.order = order
         (len_row, len_col) = self.data_sf.shape
         dom_row = 2 * np.pi / len_row / self.dy
         dom_col = 2 * np.pi / len_col / self.dx
@@ -33,16 +56,19 @@ class mgmat(object):
         (col_mesh, row_mesh) = np.meshgrid(col, row)
         H = np.sqrt(((col_mesh - col0)*dom_col)**2+((row_mesh - row0)*dom_row)**2) ** order \
             * np.exp(h * np.sqrt(((col_mesh - col0)*dom_col)**2+((row_mesh - row0)*dom_row)**2))
-        return np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        self.result = np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
 
-    def pltmap(self, data):
+    def pltmap(self, breakpoint=None):
         fig = plt.figure()
-        pcm = plt.pcolor(data, cmap='jet')
+        pcm = plt.pcolor(self.result, 
+                         cmap='jet', 
+                         norm=JetNormalize(midpoint=breakpoint))
         fig.colorbar(pcm, extend='both')
-        fig.show()
+        return fig
 
 if __name__ == '__main__':
-    filename = '../mag_test.dat'
+    filename = 'C:\\Users\\zxuxmij\\Documents\\MGPro\\mag_test.dat'
     mg = mgmat(filename)
-    dc10 = mg.continuation(-0.01, 1)
-    mg.pltmap(dc10)
+    mg.continuation(-0.01, 1)
+    mg.pltmap(breakpoint=[-8000, -800, 800, 8000])
+    plt.show()
