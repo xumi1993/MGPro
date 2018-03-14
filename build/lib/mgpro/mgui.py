@@ -46,42 +46,53 @@ class MGProUI(QMainWindow):
         self.fileEdit.textChanged[str].connect(self.onChanged)
         
         self.draw_raw_data_Button = QPushButton('Draw Data', self)
+        self.draw_raw_data_Button.setCheckable(False)
         self.draw_raw_data_Button.move(420, 40)
         self.draw_raw_data_Button.clicked[bool].connect(self.draw_raw_data)
         
         self.figWid = QWidget(self)
-        self.figWid.resize(570, 300)
+        self.figWid.resize(570, 350)
         self.figWid.move(30, 80)
-        layout = QVBoxLayout(self.figWid)
-        self.figWid.setLayout(layout)
+        layoutf = QVBoxLayout(self.figWid)
+        self.figWid.setLayout(layoutf)
+        self.raw_canvas = FigureCanvas(Figure(figsize=(7, 5)))
+        layoutf.addWidget(self.raw_canvas)
         
+        self.rstWid = QWidget(self)
+        self.rstWid.resize(570, 350)
+        self.rstWid.move(30, 480)
+        layoutd = QVBoxLayout(self.rstWid)
+        self.rstWid.setLayout(layoutd)
         self.raw_canvas = FigureCanvas(Figure(figsize=(5, 5)))
-        layout.addWidget(self.raw_canvas)
-
+        layoutd.addWidget(self.raw_canvas)
+        
+        
+        '''
+        static_ax = self.raw_canvas.figure.subplots()
+        t = np.array([[1,2,3,4],[1,2,3,4]])
+        static_ax.pcolor(t)
+        '''
+        
         # self.grid.addWidget(static_canvas,2,0)
         # self.statusBar().showMessage('Ready')
-        self.setGeometry(300, 300, 1000, 800)
+        self.setGeometry(300, 300, 1000, 900)
         self.setWindowTitle('MGPro')    
         self.show()
     
     def importFile(self):
         fname = QFileDialog.getOpenFileName(self, 'Open grid dat file', 
-                                            os.path.expanduser)
+                                            os.path.dirname(__file__))
         self.opts.fname = fname[0]
         self.fileEdit.setText(self.opts.fname)
         self.mg = mgmat(self.opts.fname)
+        self.draw_raw_data_Button.setCheckable(True)
         
     def onChanged(self, text):
         self.opts.fname = text
         
     def draw_raw_data(self):
         if isinstance(self.mg, mgmat):
-            ax_raw = self.raw_canvas.figure.subplots()
-            pcm = ax_raw.pcolor(self.mg.data, 
-                         cmap='jet') 
-                         #norm=JetNormalize(midpoint=breakpoint))
-            self.raw_canvas.colorbar(pcm, extend='both')
-            #self.mg.pltmap(self.raw_canvas.figure)
+            self.mg.pltmap(self.raw_canvas.figure, self.mg.data)
     
     
 if __name__ == '__main__':

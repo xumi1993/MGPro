@@ -4,6 +4,17 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
 
+def cal_pos(max_len, len_x, len_y):
+    if max_len > 1 or max_len < 0:
+        raise ValueError('Input arg of max_len must be in the range of 0 to 1')
+    if len_x > len_y:
+        width = max_len
+        hight = max_len * (len_y / len_x)
+    else:
+        hight = max_len
+        width = max_len * (len_x / len_y)
+    return width, hight
+
 
 class JetNormalize(colors.Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
@@ -59,15 +70,32 @@ class mgmat(object):
         self.result = np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
 
     def pltmap(self, fig, data, breakpoint=None):
-        ax = fig.subplots()
-        pcm = ax.pcolor(data, 
-                         cmap='jet', 
-                         norm=JetNormalize(midpoint=breakpoint))
-        fig.colorbar(pcm, extend='both')
+        f_width = fig.get_figwidth()
+        f_height = fig.get_figheight()
+        frac_w = min([f_height, f_width])/max([f_height, f_width])
+        real_width, real_height = cal_pos(0.7, data.shape[1], data.shape[0])
+        real_width *= frac_w
+        ax_raw = fig.gca()
+        pcm = ax_raw.pcolor(data, 
+                         cmap='jet') 
+                         #norm=JetNormalize(midpoint=breakpoint))
+        # ax_raw.figure.canvas.draw()
+        cb = fig.colorbar(pcm, extend='both')
+        ax_raw.set_position([.1, .125, real_width, real_height], which='original')
+        cb.ax.set_position([.8, .1, real_height/6.27, real_height])
+        fig.canvas.draw()
 
 if __name__ == '__main__':
     filename = 'C:\\Users\\zxuxmij\\Documents\\MGPro\\mag_test.dat'
     mg = mgmat(filename)
-    mg.continuation(-0.01, 1)
-    mg.pltmap(breakpoint=[-8000, -800, 800, 8000])
+    # mg.continuation(-0.01, 1)
+    f=plt.figure(figsize=(7, 5))
+    ax = f.gca()
+    pcm = ax.pcolor(mg.data)
+    
+    print(ax.get_position())
+    cb = f.colorbar(pcm, extend='both')
+    ax.set_position([.1,.1] + list(cal_pos(0.7, len(mg.x), len(mg.y))), which='original')
+    cb.ax.set_position([.8, .1, 0.1250, 0.78375])
+    #mg.pltmap(breakpoint=[-8000, -800, 800, 8000])
     plt.show()
