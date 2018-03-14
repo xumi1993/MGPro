@@ -2,7 +2,7 @@
 """
 Created on Tue Mar 13 12:54:06 2018
 
-@author: zxuxmij
+@author: Mijian Xu
 """
 
 import sys
@@ -11,7 +11,7 @@ import numpy as np
 from mgpro.mgmat import mgmat
 from PyQt5.QtWidgets import QMainWindow, QApplication, \
                     QAction, QMenu, QFileDialog, QGridLayout,QLineEdit, QLabel, \
-                    QWidget, QHBoxLayout, QPushButton, QVBoxLayout
+                    QWidget, QHBoxLayout, QPushButton, QVBoxLayout,QFrame
 from matplotlib.backends.backend_qt5agg import (
         FigureCanvas)
 from matplotlib.figure import Figure
@@ -19,6 +19,8 @@ from matplotlib.figure import Figure
 class opts():
     def __init__(self):
         self.fname = ''
+        self.h = 0
+        self.order = 0
 
 class MGProUI(QMainWindow):
     
@@ -50,8 +52,44 @@ class MGProUI(QMainWindow):
         self.draw_raw_data_Button.move(420, 40)
         self.draw_raw_data_Button.clicked[bool].connect(self.draw_raw_data)
         
+        self.proFrame = QFrame(self)
+        self.proFrame.setFrameShape(QFrame.StyledPanel)
+        self.proFrame.resize(350, 200)
+        self.proFrame.move(600, 40)
+        grid = QGridLayout(self.proFrame)
+        grid.setSpacing(30)
+        
+        continu_la = QLabel('Continuation:')
+        continuEdit = QLineEdit(self)
+        continuEdit.textChanged[str].connect(self.contiChanged)
+        # continuEdit.resize(30, 40)
+        
+        deriv_la = QLabel('Derivative:')
+        derivEdit = QLineEdit(self)
+        derivEdit.textChanged[str].connect(self.derivChanged)
+        
+        calButton = QPushButton('Calculate', self)
+        calButton.clicked[bool].connect(self.calculation)
+        drawButton = QPushButton('draw result', self)
+        drawButton.clicked[bool].connect(self.draw_result)
+        buttonbox = QWidget(self)
+        hbox = QHBoxLayout(buttonbox)
+        buttonbox.setLayout(hbox)
+        hbox.addWidget(calButton)
+        hbox.addWidget(drawButton)
+
+        grid.addWidget(continu_la, 0, 0)
+        grid.addWidget(continuEdit, 0, 1)
+        grid.addWidget(deriv_la, 1, 0)
+        grid.addWidget(derivEdit, 1, 1)
+        grid.addWidget(buttonbox, 2, 1)
+        # grid.addWidget(calButton, 2, 0)
+        # grid.addWidget(drawButton, 2, 1)
+        # grid.addLayout(hbox)
+        
+        
         self.figWid = QWidget(self)
-        self.figWid.resize(570, 350)
+        self.figWid.resize(532, 380)
         self.figWid.move(30, 80)
         layoutf = QVBoxLayout(self.figWid)
         self.figWid.setLayout(layoutf)
@@ -59,12 +97,12 @@ class MGProUI(QMainWindow):
         layoutf.addWidget(self.raw_canvas)
         
         self.rstWid = QWidget(self)
-        self.rstWid.resize(570, 350)
-        self.rstWid.move(30, 480)
+        self.rstWid.resize(532, 380)
+        self.rstWid.move(30, 460)
         layoutd = QVBoxLayout(self.rstWid)
         self.rstWid.setLayout(layoutd)
-        self.raw_canvas = FigureCanvas(Figure(figsize=(5, 5)))
-        layoutd.addWidget(self.raw_canvas)
+        self.pro_canvas = FigureCanvas(Figure(figsize=(7, 5)))
+        layoutd.addWidget(self.pro_canvas)
         
         
         '''
@@ -78,6 +116,18 @@ class MGProUI(QMainWindow):
         self.setGeometry(300, 300, 1000, 900)
         self.setWindowTitle('MGPro')    
         self.show()
+        
+    def contiChanged(self, text):
+        try:
+            self.opts.h = float(text)
+        except:
+            pass
+    
+    def derivChanged(self, text):
+        try:
+            self.opts.order = float(text)
+        except:
+            pass
     
     def importFile(self):
         fname = QFileDialog.getOpenFileName(self, 'Open grid dat file', 
@@ -89,7 +139,13 @@ class MGProUI(QMainWindow):
         
     def onChanged(self, text):
         self.opts.fname = text
-        
+    
+    def calculation(self):
+        self.mg.continuation(self.opts.h, self.opts.order)
+
+    def draw_result(self):
+        self.mg.pltmap(self.pro_canvas.figure, self.mg.result)
+
     def draw_raw_data(self):
         if isinstance(self.mg, mgmat):
             self.mg.pltmap(self.raw_canvas.figure, self.mg.data)

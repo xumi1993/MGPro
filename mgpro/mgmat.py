@@ -75,6 +75,7 @@ class mgmat(object):
         frac_w = min([f_height, f_width])/max([f_height, f_width])
         real_width, real_height = cal_pos(0.7, data.shape[1], data.shape[0])
         real_width *= frac_w
+        fig.clf()
         ax_raw = fig.gca()
         pcm = ax_raw.pcolor(data, 
                          cmap='jet') 
