@@ -78,8 +78,8 @@ class mgmat(object):
         fig.clf()
         ax_raw = fig.gca()
         pcm = ax_raw.pcolor(data, 
-                         cmap='jet') 
-                         #norm=JetNormalize(midpoint=breakpoint))
+                         cmap='jet', 
+                         norm=JetNormalize(midpoint=breakpoint))
         # ax_raw.figure.canvas.draw()
         cb = fig.colorbar(pcm, extend='both')
         ax_raw.set_position([.1, .125, real_width, real_height], which='original')
