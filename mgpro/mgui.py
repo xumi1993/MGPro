@@ -9,7 +9,7 @@ import sys
 import os
 from datetime import datetime
 import numpy as np
-from mgpro.mgmat import mgmat
+from mgpro.mgpro import mgmat
 from PyQt5.QtWidgets import QMainWindow, QApplication, \
                     QAction, QMenu, QFileDialog, QGridLayout,QLineEdit, QLabel, \
                     QWidget, QHBoxLayout, QPushButton, QVBoxLayout,QFrame, \

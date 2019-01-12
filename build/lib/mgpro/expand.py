@@ -1,6 +1,6 @@
 import math as M
 import numpy as np
-from mgpro.mgmat import mgmat
+from mgpro.mgpro import mgmat
 import matplotlib.pyplot as plt
 
 

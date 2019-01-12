@@ -1,4 +1,7 @@
-
 *.iml
-
 *.pyc
+/dist/
+/*.egg*/
+/.idea/
+/.vscode/
+/build/

@@ -1,1 +1,1 @@
-from mgpro import expand, mgmat
+from mgpro import expand, mgpro
