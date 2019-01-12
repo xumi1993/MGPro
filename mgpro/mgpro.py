@@ -117,7 +117,7 @@ class mgmat(object):
         with open(filename, 'w') as f:
             for i, x in enumerate(self.x):
                 for j, y in enumerate(self.y):
-                    f.write('{:.4f}\t{:.4f}\t{:f}\n'.format(x, y, self.result[j, i]))
+                    f.write('{:.4f}\t{:.4f}\t{:.10f}\n'.format(x, y, self.result[j, i]))
 
 
 def exec():
@@ -130,9 +130,9 @@ def exec():
     arg = parser.parse_args()
     try:
         h, order = [float(v) for v in arg.c.split('/')]
-        dx, dy = [float(v) for v in arg.d.spllt('/')]
+        dx, dy = [float(v) for v in arg.d.split('/')]
         if arg.R is not None:
-            arg.R = [float(v) for v in arg.R.spllt('/')]
+            arg.R = [float(v) for v in arg.R.split('/')]
     except Exception as e:
         raise ValueError('{}\nError in parsing arguments.'.format(e))
     mg = mgmat(arg.in_file, dx, dy, xy_limit=arg.R)
