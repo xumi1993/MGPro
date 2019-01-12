@@ -3,22 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="edeb6f02-0e8c-4c72-8baa-b897be95e5dc" name="Default" comment="update">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/mgpro/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/build/lib/mgpro/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/mgpro/expand.py" beforeDir="false" afterPath="$PROJECT_DIR$/build/lib/mgpro/expand.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/mgpro/mgui.py" beforeDir="false" afterPath="$PROJECT_DIR$/build/lib/mgpro/mgui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mag_geod.dat" beforeDir="false" afterPath="$PROJECT_DIR$/emaple/mag_geod.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mag_proj.dat" beforeDir="false" afterPath="$PROJECT_DIR$/emaple/mag_proj.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mag_test.dat" beforeDir="false" afterPath="$PROJECT_DIR$/emaple/mag_test.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mag_up0_diff1.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mag_up10_diff1.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/magproj.eps" beforeDir="false" afterPath="$PROJECT_DIR$/emaple/magproj.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mgpro/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mgpro/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mgpro/expand.py" beforeDir="false" afterPath="$PROJECT_DIR$/mgpro/expand.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mgpro/mgmat.py" beforeDir="false" afterPath="$PROJECT_DIR$/mgpro/mgpro.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mgpro/mgui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mgpro/mgui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/new.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ps_proj.sh" beforeDir="false" afterPath="$PROJECT_DIR$/mgpro/ps_proj.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/emaple/mag_test.dat" beforeDir="false" afterPath="$PROJECT_DIR$/emaple/mag_test.dat" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,13 +16,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="3" />
-          <entry key="gitignore" value="42" />
+          <entry key="gitignore" value="43" />
           <entry key="py" value="710" />
+          <entry key="txt" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="45" />
+          <entry key="PLAIN_TEXT" value="52" />
           <entry key="Python" value="710" />
         </counts>
       </usages-collector>
@@ -102,8 +88,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="6" column="7" selection-start-line="6" selection-start-column="7" selection-end-line="6" selection-end-column="7" />
+            <state relative-caret-position="42">
+              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
             </state>
           </provider>
         </entry>
@@ -364,14 +350,21 @@
       <option name="project" value="LOCAL" />
       <updated>1547219782967</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="update">
+      <created>1547291492133</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1547291492133</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="68" y="23" width="2492" height="1417" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.06717928" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.06717928" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -382,7 +375,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.21509434" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.21509434" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.3282989" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -489,8 +482,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="6" column="7" selection-start-line="6" selection-start-column="7" selection-end-line="6" selection-end-column="7" />
+        <state relative-caret-position="42">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
         </state>
       </provider>
     </entry>
