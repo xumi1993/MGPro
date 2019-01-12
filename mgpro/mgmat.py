@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
 from scipy.interpolate import griddata
+import argparse
 
 
 def cal_pos(max_len, len_x, len_y):
@@ -113,6 +114,10 @@ class mgmat(object):
             for i, x in enumerate(self.x):
                 for j, y in enumerate(self.y):
                     f.write('{:.4f}\t{:.4f}\t{:f}\n'.format(x, y, self.result[j, i]))
+
+
+def exec():
+    pass
 
 
 if __name__ == '__main__':
