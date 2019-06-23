@@ -41,6 +41,20 @@ def xyz2grd(raw_data, dx, dy, xy_limit=None):
     return xrange, yrange, grid_data
 
 
+def norm_uv(data, dx, dy):
+    (len_row, len_col) = data
+    dom_row = 2 * np.pi / len_row / dy
+    dom_col = 2 * np.pi / len_col / dx
+    row = np.arange(1, len_row+1)
+    col = np.arange(1, len_col+1)
+    row0 = int(len_row / 2) + 1
+    col0 = int(len_col / 2) + 1
+    (col_mesh, row_mesh) = np.meshgrid(col, row)
+    u = ((col_mesh - col0)*dom_col)
+    v = ((row_mesh - row0)*dom_row)
+    return u, v
+
+
 class JetNormalize(colors.Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
         if midpoint is None:
@@ -86,32 +100,34 @@ class mgmat(object):
     def continuation(self, h, order):
         self.h = h
         self.order = order
-        (len_row, len_col) = self.data_sf.shape
-        dom_row = 2 * np.pi / len_row / self.dy
-        dom_col = 2 * np.pi / len_col / self.dx
-        row = np.arange(1, len_row+1)
-        col = np.arange(1, len_col+1)
-        row0 = int(len_row / 2) + 1
-        col0 = int(len_col / 2) + 1
-        (col_mesh, row_mesh) = np.meshgrid(col, row)
-        H = np.sqrt(((col_mesh - col0)*dom_col)**2+((row_mesh - row0)*dom_row)**2) ** order \
-            * np.exp(h * np.sqrt(((col_mesh - col0)*dom_col)**2+((row_mesh - row0)*dom_row)**2))
-        self.result = np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
-        return self.result
+        u, v = norm_uv(self.data_sf, self.dx, self.dy)
+        H = np.sqrt(u**2+v**2) ** order * np.exp(h * np.sqrt(u**2+v**2))
+        result = np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        return result
 
     def gradient(self):
-        grad_ns = -np.diff(self.data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
-        grad_we = np.diff(self.data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        data_expand = np.flipud(self.data_expand)
+        grad_ns = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        grad_we = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         grad_mod = np.sqrt(grad_ns**2 + grad_we**2)
-        grad_45 = np.zeros_like(self.data_expand)
-        grad_135 = np.empty_like(self.data_expand)
+        grad_45 = np.zeros_like(data_expand)
+        grad_135 = np.zeros_like(data_expand)
         for _i in range(self.row_begin, self.row_end + 1):
             for _j in range(self.col_begin, self.col_end + 1):
-                grad_45[_i, _j] = self.data_expand[_i, _j] - self.data_expand[_i-1, _j+1]
-                grad_135[_i, _j] = self.data_expand[_i, _j] - self.data_expand[_i-1, _j-1]
-        grad_45 = grad_45[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
-        grad_135 = grad_135[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+                grad_45[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j+1]
+                grad_135[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j-1]
+        grad_45 = np.flipud(grad_45)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+        grad_135 = np.flipud(grad_135)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
         return grad_ns, grad_45, grad_we, grad_135, grad_mod
+
+    def dt2za(self, i0, d0):
+        P0 = np.cos(np.deg2rad(i0)) * np.cos(np.deg2rad(d0))
+        Q0 = np.cos(np.deg2rad(i0)) * np.sin(np.deg2rad(d0))
+        R0 = np.sin(np.deg2rad(i0))
+        u, v = norm_uv(self.data_sf, self.dx, self.dy)
+        phi = np.sqrt(u**2 + v**2) / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
+        result = np.real(ifft2(ifftshift(phi * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        return result
 
     def pltmap(self, fig, data, breakpoint=None):
         f_width = fig.get_figwidth()
@@ -128,11 +144,11 @@ class mgmat(object):
         # cb.ax.set_position([.8, .1, real_height/6.27, real_height])
         fig.canvas.draw()
 
-    def savetxt(self, filename):
+    def savetxt(self, filename, result):
         with open(filename, 'w') as f:
             for i, x in enumerate(self.x):
                 for j, y in enumerate(self.y):
-                    f.write('{:.4f}\t{:.4f}\t{:.10f}\n'.format(x, y, self.result[j, i]))
+                    f.write('{:.4f}\t{:.4f}\t{:.6f}\n'.format(x, y, result[j, i]))
 
 
 def exec():
@@ -151,11 +167,14 @@ def exec():
     except Exception as e:
         raise ValueError('{}\nError in parsing arguments.'.format(e))
     mg = mgmat(arg.in_file, dx, dy, xy_limit=arg.R)
-    mg.continuation(h, order)
-    mg.savetxt(arg.path)
+    result = mg.continuation(h, order)
+    mg.savetxt(arg.path, result)
 
 
 if __name__ == '__main__':
-    mg = mgmat(join('/Users/xumj/Codes/MGPro/example/mag_proj.dat'), 2, 2)
-    mg.gradient()
+    mg = mgmat(join('/Users/xumj/Codes/MGPro/example/mag_proj.dat'), 2000, 2000)
+    grad_ns, grad_45, grad_we, grad_135, grad_mod = mg.gradient()
+    mg.savetxt('/Users/xumj/Codes/MGPro/example/mag_grad135.dat', grad_135)
+    mg.savetxt('/Users/xumj/Codes/MGPro/example/mag_grad_mod.dat', grad_mod)
+
     # exec()
