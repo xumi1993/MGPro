@@ -2,7 +2,7 @@
 *.pyc
 dist/
 *.egg*/
-.idea/
+/.idea/
 .vscode/
 build/
 .DS_Store
