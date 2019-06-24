@@ -52,18 +52,13 @@ Syntax: read filename dx dy [\'geo\']
             else:
                 print('Error: Specify \'geo\' to convert spherical coordinate to geo coordinate')
                 return
-        # elif 3 < len(arg_lst) < 7:
-        #     print('The region must be in 4 args')
-        #     return
-        # elif len(arg_lst) == 7:
-        #     filename = arg_lst[0]
-        #     dx = float(arg_lst[1])
-        #     dy = float(arg_lst[2])
-        #     xy_limit = [float(pos) for pos in arg_lst[3:]]
         else:
             print('Error: Too many argumenrs')
             return
-        self.mg = mgpro.mgmat(filename, dx, dy, to_geo=to_geo)
+        try:
+            self.mg = mgpro.mgmat(filename, dx, dy, to_geo=to_geo)
+        except Exception as e:
+            print('Error: Cannot read {}\n{}'.format(filename, e))
 
     def do_continuation(self, arg):
         '''
@@ -141,5 +136,9 @@ Syntax: write filename [\'lalo\']
             print('Command not found')
 
 
-if __name__ == "__main__":
+def main():
     Client().cmdloop()
+
+
+if __name__ == "__main__":
+    main()

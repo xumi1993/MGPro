@@ -1,12 +1,11 @@
 import numpy as np
-import expand
-from proj import *
+from mgpro import expand
+from mgpro.proj import *
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
 from scipy.interpolate import griddata
 import argparse
-from os.path import dirname, join
 
 
 def msg():
