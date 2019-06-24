@@ -102,8 +102,10 @@ class mgmat(object):
         data_expand = np.flipud(self.data_expand)
         if degree == '0':
             grad = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+            grad /= self.dy
         elif degree == '90':
             grad = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+            grad /= self.dx
         elif degree == 'mod':
             ns = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
             we = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
@@ -113,13 +115,13 @@ class mgmat(object):
             for _i in range(self.row_begin, self.row_end + 1):
                 for _j in range(self.col_begin, self.col_end + 1):
                     grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j+1]
-            grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+            grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(self.dx**2 + self.dy**2)
         elif degree == '135':
             grad = np.zeros_like(data_expand)
             for _i in range(self.row_begin, self.row_end + 1):
                 for _j in range(self.col_begin, self.col_end + 1):
                     grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j-1]
-            grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+            grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(self.dx**2 + self.dy**2)
         grad = np.flipud(grad)
         return grad
 
