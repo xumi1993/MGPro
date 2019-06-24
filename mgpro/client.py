@@ -63,7 +63,7 @@ Syntax: read filename dx dy [\'geo\']
         else:
             print('Error: Too many argumenrs')
             return
-        self.mg = mgpro.mgmat(filename, dx, dy, to_geo)
+        self.mg = mgpro.mgmat(filename, dx, dy, to_geo=to_geo)
 
     def do_continuation(self, arg):
         '''

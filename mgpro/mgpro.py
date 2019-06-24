@@ -113,13 +113,14 @@ class mgmat(object):
             for _i in range(self.row_begin, self.row_end + 1):
                 for _j in range(self.col_begin, self.col_end + 1):
                     grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j+1]
-            grad = np.flipud(grad)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+            grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
         elif degree == '135':
             grad = np.zeros_like(data_expand)
             for _i in range(self.row_begin, self.row_end + 1):
                 for _j in range(self.col_begin, self.col_end + 1):
                     grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j-1]
-            grad = np.flipud(grad)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+            grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+        grad = np.flipud(grad)
         return grad
 
     def dt2za(self, i0, d0):

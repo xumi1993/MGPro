@@ -1,6 +1,6 @@
 #!/bin/bash
 ps=magproj.eps
-proj=mag_grad135.dat
+proj=mag_grad_90.dat
 
 r=`gmt info -C $proj | awk '{print $1"/"$2"/"$3"/"$4}'`
 gmt psbasemap -R$r -JX6i -Bafg -BWSne -K > $ps
