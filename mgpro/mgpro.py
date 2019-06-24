@@ -1,5 +1,6 @@
 import numpy as np
 import expand
+from proj import *
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
@@ -7,10 +8,12 @@ from scipy.interpolate import griddata
 import argparse
 from os.path import dirname, join
 
+
 def msg():
     return '''
     Usage: mgpro.py -c<conti>/<diff> -d <dx>/<dy> -o <out_path> [-R <xmin/<xmax>/<ymix>/<ymax>]
     '''
+
 
 def cal_pos(max_len, len_x, len_y):
     if max_len > 1 or max_len < 0:
@@ -42,7 +45,7 @@ def xyz2grd(raw_data, dx, dy, xy_limit=None):
 
 
 def norm_uv(data, dx, dy):
-    (len_row, len_col) = data
+    (len_row, len_col) = data.shape
     dom_row = 2 * np.pi / len_row / dy
     dom_col = 2 * np.pi / len_col / dx
     row = np.arange(1, len_row+1)
@@ -74,22 +77,12 @@ class JetNormalize(colors.Normalize):
 
 
 class mgmat(object):
-    def __init__(self, file, dx, dy, xy_limit=None):
+    def __init__(self, file, dx, dy, xy_limit=None, to_geo=False):
         self.dx = dx
         self.dy = dy
         in_data = np.loadtxt(file)
-        # self.x = np.unique(in_data[:, 0])
-        # self.y = np.unique(in_data[:, 1])
-        # len_x = self.x.shape[0]
-        # len_y = self.y.shape[0]
-        # self.dx = np.mean(np.diff(self.x))
-        # self.dy = np.mean(np.diff(self.y))
-        # self.data = np.zeros([len_y, len_x])
-        # m = 0
-        # for i in range(len_y):
-        #     for j in range(len_x):
-        #         self.data[i, j] = in_data[m, 2]
-        #         m += 1
+        if to_geo:
+            in_data = latlon2geo(in_data)
         self.x, self.y, self.data = xyz2grd(in_data, dx, dy, xy_limit=xy_limit)
         self.data_expand, self.row_begin, self.row_end, self.col_begin, self.col_end = expand.expand(self.data)
         self.data_sf = fftshift(fft2(self.data_expand))
@@ -105,20 +98,29 @@ class mgmat(object):
         result = np.real(ifft2(ifftshift(H * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         return result
 
-    def gradient(self):
+    def gradient(self, degree):
         data_expand = np.flipud(self.data_expand)
-        grad_ns = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
-        grad_we = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
-        grad_mod = np.sqrt(grad_ns**2 + grad_we**2)
-        grad_45 = np.zeros_like(data_expand)
-        grad_135 = np.zeros_like(data_expand)
-        for _i in range(self.row_begin, self.row_end + 1):
-            for _j in range(self.col_begin, self.col_end + 1):
-                grad_45[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j+1]
-                grad_135[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j-1]
-        grad_45 = np.flipud(grad_45)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
-        grad_135 = np.flipud(grad_135)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
-        return grad_ns, grad_45, grad_we, grad_135, grad_mod
+        if degree == '0':
+            grad = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        elif degree == '90':
+            grad = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        elif degree == 'mod':
+            ns = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+            we = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+            grad = np.sqrt(ns**2 + we**2)
+        elif degree == '45':
+            grad = np.zeros_like(data_expand)
+            for _i in range(self.row_begin, self.row_end + 1):
+                for _j in range(self.col_begin, self.col_end + 1):
+                    grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j+1]
+            grad = np.flipud(grad)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+        elif degree == '135':
+            grad = np.zeros_like(data_expand)
+            for _i in range(self.row_begin, self.row_end + 1):
+                for _j in range(self.col_begin, self.col_end + 1):
+                    grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j-1]
+            grad = np.flipud(grad)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(2)
+        return grad
 
     def dt2za(self, i0, d0):
         P0 = np.cos(np.deg2rad(i0)) * np.cos(np.deg2rad(d0))
@@ -144,11 +146,18 @@ class mgmat(object):
         # cb.ax.set_position([.8, .1, real_height/6.27, real_height])
         fig.canvas.draw()
 
-    def savetxt(self, filename, result):
-        with open(filename, 'w') as f:
-            for i, x in enumerate(self.x):
-                for j, y in enumerate(self.y):
-                    f.write('{:.4f}\t{:.4f}\t{:.6f}\n'.format(x, y, result[j, i]))
+    def savetxt(self, filename, result, to_latlon=False):
+        points = np.zeros([result.size, 3])
+        m = 0
+        for i, x in enumerate(self.x):
+            for j, y in enumerate(self.y):
+                points[m, 0] = x
+                points[m, 1] = y
+                points[m, 2] = result[j, i]
+                m += 1
+        if to_latlon:
+            points = geo2latlon(points)
+        np.savetxt(filename, points, fmt='%.4f %.4f %.6f')
 
 
 def exec():

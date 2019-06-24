@@ -1,7 +1,7 @@
 import math as M
 import numpy as np
-from mgpro import mgmat
-import matplotlib.pyplot as plt
+# from mgpro import mgmat
+# import matplotlib.pyplot as plt
 
 
 def next_pow_2(i):
@@ -40,8 +40,9 @@ def expand(data):
 
 
 if __name__ == '__main__':
-    filename = '/Users/xumj/Codes/MGPro/mag_test.dat'
-    mg = mgmat(filename)
-    data_ex, row_begin, row_end, col_begin, col_end = expand(mg.data)
-    plt.pcolormesh(data_ex)
-    plt.show()
+    pass
+    # filename = '/Users/xumj/Codes/MGPro/mag_test.dat'
+    # mg = mgmat(filename)
+    # data_ex, row_begin, row_end, col_begin, col_end = expand(mg.data)
+    # plt.pcolormesh(data_ex)
+    # plt.show()
