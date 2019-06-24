@@ -4,13 +4,14 @@ MGPro is a Python Interactive command line toolbox for processing geomagnetic an
 
 ## Installation
 ### Install MGPro via Pypi
+We recommend this way for general user.
+
 
 ```
 pip install mgpro
 ```
 
 ### Install MGPro via source codes
-We recommend this way for general user.
 
 1. Download source codes from github
 
@@ -27,7 +28,7 @@ python setup.py install
 
 ## What does MGPro contain?
 ### MGPro client
-Just enter `mgpro` in command line to run MGPro client. the MGPro interface is shown as follows:
+Just enter `mgpro` in command line to run MGPro client. The MGPro interface is shown as follows:
 
 ```bash
 $ mgpro
