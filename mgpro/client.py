@@ -1,7 +1,7 @@
 from cmd import Cmd
 import readline
 import sys
-import mgpro
+from mgpro import mgpro
 import glob
 
 
