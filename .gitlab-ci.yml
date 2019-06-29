@@ -33,23 +33,12 @@ before_script:
 #     - pip install tox flake8  # you can also use tox
 #     - tox -e py36,flake8
 
-py37:
+deploy:
   script:
-    - conda create -n testenv37 python=3.7
-    - source activate testenv37
-    - pip install setuptools wheel
+    - conda create -n deploy
+    - source activate deploy
+    - pip install setuptools wheel twine
     - python setup.py sdist bdist_wheel
-    # an alternative approach is to install and run:
-    # run the command here
-
-py36:
-  script:
-    - conda create -n testenv36 python=3.6
-    - source activate testenv36
-    - pip install setuptools wheel
-    - python setup.py sdist bdist_wheel
-    
-after_script:
-    - pip install twine
     - twine upload dist/*
+
     
