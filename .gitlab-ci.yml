@@ -31,7 +31,7 @@ before_script:
   # - conda config --add channels https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/
   - pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
   - conda info -a
-  - pip install twine
+  - pip install twine setuptools wheel
 
 # test:
 #   script:
@@ -41,10 +41,18 @@ before_script:
 
 py37:
   script:
-    - python setup.py sdist
+    - conda create -n testenv37 python=3.7
+    - source activate testenv37
+    - python setup.py sdist bdist_wheel
     # an alternative approach is to install and run:
-    - twine upload dist/*
     # run the command here
-  artifacts:
-    paths:
-      - dist/*.whl
+
+py36:
+  script:
+    - conda create -n testenv36 python=3.6
+    - source activate testenv36
+    - python setup.py sdist bdist_wheel
+    
+after_script:
+    twine upload dist/*
+    
