@@ -5,7 +5,7 @@ packages = find_packages()
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 setup(name='mgpro',
       version=VERSION,
       author='Mijian Xu',
