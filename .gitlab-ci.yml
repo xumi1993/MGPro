@@ -54,5 +54,5 @@ py36:
     - python setup.py sdist bdist_wheel
     
 after_script:
-    twine upload dist/*
+    - twine upload dist/*
     
