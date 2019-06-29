@@ -23,9 +23,9 @@ def expand(data):
     nft_row = next_pow_2(len_row)
     nft_col = next_pow_2(len_col)
     data_ex = np.zeros([nft_row, nft_col])
-    row_begin = round((nft_row - len_row) / 2)
+    row_begin = int(round((nft_row - len_row) / 2))
     row_end = row_begin + len_row - 1
-    col_begin = round((nft_col - len_col) / 2)
+    col_begin = int(round((nft_col - len_col) / 2))
     col_end = col_begin + len_col - 1
     data_ex[row_begin:row_end + 1, col_begin:col_end + 1] = data
     data_ex[row_begin:row_end + 1, 0: col_begin] = np.tile(data[:, 0], (col_begin, 1)).T \

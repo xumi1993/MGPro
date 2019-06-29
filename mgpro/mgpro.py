@@ -52,8 +52,8 @@ def norm_uv(data, dx, dy):
     row0 = int(len_row / 2) + 1
     col0 = int(len_col / 2) + 1
     (col_mesh, row_mesh) = np.meshgrid(col, row)
-    u = ((col_mesh - col0)*dom_col)
-    v = ((row_mesh - row0)*dom_row)
+    u = (col_mesh - col0)*dom_col
+    v = (row_mesh - row0)*dom_row
     return u, v
 
 
@@ -121,7 +121,7 @@ class mgmat(object):
                 for _j in range(self.col_begin, self.col_end + 1):
                     grad[_i, _j] = data_expand[_i, _j] - data_expand[_i-1, _j-1]
             grad = grad[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / np.sqrt(self.dx**2 + self.dy**2)
-        grad = np.flipud(grad)
+        grad = np.flipud(grad)*1000
         return grad
 
     def dt2za(self, i0, d0):
@@ -162,30 +162,8 @@ class mgmat(object):
         np.savetxt(filename, points, fmt='%.4f %.4f %.6f')
 
 
-def exec():
-    parser = argparse.ArgumentParser(description="Continuation and derivative for 2d data", usage=msg())
-    parser.add_argument('-c', help='<conti>: value for continuation; <diff>: order for derivative', required=True, type=str)
-    parser.add_argument('-d', help='<dx>/<dy>: grid interval in X and Y axis.', required=True, type=str)
-    parser.add_argument('-o', help='Path to output file ', required=True, dest='path', type=str)
-    parser.add_argument('-R', help='Specify the region of the study', type=str, default=None)
-    parser.add_argument('in_file', help='Path to input table file', type=str)
-    arg = parser.parse_args()
-    try:
-        h, order = [float(v) for v in arg.c.split('/')]
-        dx, dy = [float(v) for v in arg.d.split('/')]
-        if arg.R is not None:
-            arg.R = [float(v) for v in arg.R.split('/')]
-    except Exception as e:
-        raise ValueError('{}\nError in parsing arguments.'.format(e))
-    mg = mgmat(arg.in_file, dx, dy, xy_limit=arg.R)
-    result = mg.continuation(h, order)
-    mg.savetxt(arg.path, result)
-
-
 if __name__ == '__main__':
-    mg = mgmat(join('/Users/xumj/Codes/MGPro/example/mag_proj.dat'), 2000, 2000)
-    grad_ns, grad_45, grad_we, grad_135, grad_mod = mg.gradient()
-    mg.savetxt('/Users/xumj/Codes/MGPro/example/mag_grad135.dat', grad_135)
-    mg.savetxt('/Users/xumj/Codes/MGPro/example/mag_grad_mod.dat', grad_mod)
+    mg = mgmat('/Users/xumj/Codes/MGPro/example/mag_proj.dat', 2000, 2000)
+    mg.dt2za(46, -1)
 
     # exec()

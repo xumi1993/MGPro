@@ -3,6 +3,7 @@ import readline
 import sys
 from mgpro import mgpro
 import glob
+import subprocess
 
 
 def complete(text, state):
@@ -76,14 +77,15 @@ Syntax: continuation h order
 
     def do_gradient(self, arg):
         '''
-gradient (g): Calculare horizontal gradient or the module
+gradient (g): Calculare horizontal gradient or the module.
+    NOTE: The unit of the input must be meter. The unit of the output has converted to km.
 
 Syntax: gradient option
     option: Specify the parameter in [0|45|90|135|mod], which represent the \
 horizontal gradient in azimuth of 0, 45, 90 or 135 or module of horizontal gradient
         '''
         if len(arg.split()) != 1:
-            print('Error: Too many arguments')
+            print('Error: Only 1 argument required, but {} arguments got'.format(arg.split()))
             return
         elif arg not in ['0', '90', '45', '135', 'mod']:
             print('Error: Degree or module must be in 0, 45, 90, 135 and \'mod\'')
@@ -133,7 +135,10 @@ Syntax: write filename [\'lalo\']
         if cmd in self.aliases:
             self.aliases[cmd](arg)
         else:
-            print('Command not found')
+            try:
+                subprocess.call(line, shell=True)
+            except:
+                print('Command not found')
 
 
 def main():
