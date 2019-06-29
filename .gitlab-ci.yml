@@ -37,7 +37,7 @@ py37:
   script:
     - conda create -n testenv37 python=3.7
     - source activate testenv37
-    - pip install twine setuptools wheel
+    - pip install setuptools wheel
     - python setup.py sdist bdist_wheel
     # an alternative approach is to install and run:
     # run the command here
@@ -46,9 +46,10 @@ py36:
   script:
     - conda create -n testenv36 python=3.6
     - source activate testenv36
-    - pip install twine setuptools wheel
+    - pip install setuptools wheel
     - python setup.py sdist bdist_wheel
     
 after_script:
+    - pip install twine
     - twine upload dist/*
     
