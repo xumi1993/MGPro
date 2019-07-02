@@ -1,12 +1,15 @@
 import numpy as np
-from mgpro import expand
-from mgpro.proj import *
+# from mgpro import expand
+import expand
+# from mgpro.proj import *
+from proj import *
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
 from scipy.interpolate import griddata
 import argparse
 
+np.warnings.filterwarnings('ignore')
 
 def msg():
     return '''
@@ -41,6 +44,12 @@ def xyz2grd(raw_data, dx, dy, xy_limit=None):
     ymesh, xmesh = np.meshgrid(yrange, xrange, indexing='ij')
     grid_data = griddata(data[:, 0:2], data[:, 2], (ymesh, xmesh))
     return xrange, yrange, grid_data
+
+def direction_cos(i0, d0):
+    P0 = np.cos(np.deg2rad(i0)) * np.cos(np.deg2rad(d0))
+    Q0 = np.cos(np.deg2rad(i0)) * np.sin(np.deg2rad(d0))
+    R0 = np.sin(np.deg2rad(i0))
+    return P0, Q0, R0
 
 
 def norm_uv(data, dx, dy):
@@ -125,15 +134,33 @@ class mgmat(object):
         return grad
 
     def dt2za(self, i0, d0):
-        P0 = np.cos(np.deg2rad(i0)) * np.cos(np.deg2rad(d0))
-        Q0 = np.cos(np.deg2rad(i0)) * np.sin(np.deg2rad(d0))
-        R0 = np.sin(np.deg2rad(i0))
+        P0, Q0, R0 = direction_cos(i0, d0)
         u, v = norm_uv(self.data_sf, self.dx, self.dy)
         phi = np.sqrt(u**2 + v**2) / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
+        phi[np.where(np.isnan(phi))] = 0 + 0j
         result = np.real(ifft2(ifftshift(phi * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         return result
 
-    def pltmap(self, fig, data, breakpoint=None):
+    def dt2xa(self, i0, d0):
+        P0, Q0, R0 = direction_cos(i0, d0)
+        u, v = norm_uv(self.data_sf, self.dx, self.dy)
+        trans_func = u*1j / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
+        trans_func[np.where(np.isnan(trans_func))] = 0 + 0j
+        result = np.real(ifft2(ifftshift(trans_func * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        return result
+
+    
+    def dt2ya(self, i0, d0):
+        P0, Q0, R0 = direction_cos(i0, d0)
+        u, v = norm_uv(self.data_sf, self.dx, self.dy)
+        trans_func = v*1j / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
+        trans_func[np.where(np.isnan(trans_func))] = 0 + 0j
+        result = np.real(ifft2(ifftshift(trans_func * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        return result
+
+
+    def pltmap(self, data, breakpoint=None):
+        fig = plt.figure()
         f_width = fig.get_figwidth()
         f_height = fig.get_figheight()
         frac_w = min([f_height, f_width])/max([f_height, f_width])
@@ -141,12 +168,13 @@ class mgmat(object):
         real_width *= frac_w
         fig.clf()
         ax_raw = fig.gca()
-        pcm = ax_raw.pcolor(data, cmap='jet')
+        pcm = ax_raw.imshow(data, cmap='jet', extent=[self.x[0], self.x[-1], self.y[0], self.y[-1]])
         # ax_raw.figure.canvas.draw()
         cb = fig.colorbar(pcm, extend='both')
         # ax_raw.set_position([.1, .125, real_width, real_height], which='original')
         # cb.ax.set_position([.8, .1, real_height/6.27, real_height])
         fig.canvas.draw()
+        plt.show()
 
     def savetxt(self, filename, result, to_latlon=False):
         points = np.zeros([result.size, 3])
@@ -164,6 +192,4 @@ class mgmat(object):
 
 if __name__ == '__main__':
     mg = mgmat('/Users/xumj/Codes/MGPro/example/mag_proj.dat', 2000, 2000)
-    mg.dt2za(46, -1)
-
-    # exec()
+    mg.pltmap(mg.dt2ya(46, -1))

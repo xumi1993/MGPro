@@ -16,9 +16,12 @@ class Client(Cmd):
         self.prompt = 'MGPro>'
         self.aliases = {'c': self.do_continuation,
                         'g': self.do_gradient,
+                        'p': self.do_plot,
                         'q': self.do_quit,
                         'r': self.do_read,
                         'w': self.do_write,
+                        'x': self.do_dt2xa,
+                        'y': self.do_dt2ya,
                         'z': self.do_dt2za,
                         'h': self.do_help}
         self.result = None
@@ -93,9 +96,46 @@ horizontal gradient in azimuth of 0, 45, 90 or 135 or module of horizontal gradi
         self.result = self.mg.gradient(arg)
 
     def do_dt2za(self, arg):
-        if len(arg.split()) != 2:
+        '''
+dt2za (z): Vertical magnetization
+
+Syntax: dt2za i0 d0
+    i0: Magnetic dip of the region
+    d0: Magnetic declination of the region
+        '''
+        if len(arg.split()) == 2:
             i0, d0 = [float(value) for value in arg.split()]
             self.result = self.mg.dt2za(i0, d0)
+        else:
+            print('Two argumrnts required')
+
+    def do_dt2xa(self, arg):
+        '''
+dt2xa (x): Horizontal magnetization along x direction
+
+Syntax: dt2xa i0 d0
+    i0: Magnetic dip of the region
+    d0: Magnetic declination of the region
+        '''
+        if len(arg.split()) == 2:
+            i0, d0 = [float(value) for value in arg.split()]
+            self.result = self.mg.dt2xa(i0, d0)
+        else:
+            print('Two argumrnts required')
+
+    def do_dt2ya(self, arg):
+        '''
+dt2xa (y): Horizontal magnetization along y direction
+
+Syntax: dt2ya i0 d0
+    i0: Magnetic dip of the region
+    d0: Magnetic declination of the region
+        '''
+        if len(arg.split()) == 2:
+            i0, d0 = [float(value) for value in arg.split()]
+            self.result = self.mg.dt2ya(i0, d0)
+        else:
+            print('Two argumrnts required')
 
     def do_write(self, arg):
         '''
@@ -124,6 +164,14 @@ Syntax: write filename [\'lalo\']
         except Exception as e:
             print('{}'.format(e))
             return
+
+    def do_plot(self, arg):
+        '''
+plot (p): Preview the result.
+
+Syntax: plot
+        ''' 
+        self.mg.pltmap(self.result)
 
     def completedefault(self, *args):
         readline.set_completer_delims(' \t\n;')
