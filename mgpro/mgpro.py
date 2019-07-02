@@ -1,8 +1,8 @@
 import numpy as np
-# from mgpro import expand
-import expand
-# from mgpro.proj import *
-from proj import *
+from mgpro import expand
+# import expand
+from mgpro.proj import *
+# from proj import *
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
