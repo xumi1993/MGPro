@@ -1,8 +1,8 @@
 import numpy as np
-from mgpro import expand
-# import expand
-from mgpro.proj import *
-# from proj import *
+# from mgpro import expand
+import expand
+# from mgpro.proj import *
+from proj import *
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
@@ -15,6 +15,11 @@ def msg():
     return '''
     Usage: mgpro.py -c<conti>/<diff> -d <dx>/<dy> -o <out_path> [-R <xmin/<xmax>/<ymix>/<ymax>]
     '''
+
+
+def tick2label(ticks, lim):
+    labels = ['{:.0f}'.format(tick) for tick in np.linspace(lim[0], lim[1], len(ticks))]
+    return labels
 
 
 def cal_pos(max_len, len_x, len_y):
@@ -168,8 +173,13 @@ class mgmat(object):
         real_width *= frac_w
         fig.clf()
         ax_raw = fig.gca()
-        pcm = ax_raw.imshow(data, cmap='jet', extent=[self.x[0], self.x[-1], self.y[0], self.y[-1]])
-        # ax_raw.figure.canvas.draw()
+        divnorm = colors.DivergingNorm(vcenter=0)
+        pcm = ax_raw.pcolor(data, cmap='jet', norm=divnorm)
+        xticklabels = tick2label(ax_raw.get_xticks(), [self.x[0], self.x[-1]])
+        yticklabels = tick2label(ax_raw.get_yticks(), [self.y[0], self.y[-1]])
+        ax_raw.set_xticklabels(xticklabels)
+        ax_raw.set_yticklabels(yticklabels)
+        plt.setp(ax_raw.get_xticklabels(), rotation=-45, ha="left")
         cb = fig.colorbar(pcm, extend='both')
         # ax_raw.set_position([.1, .125, real_width, real_height], which='original')
         # cb.ax.set_position([.8, .1, real_height/6.27, real_height])
