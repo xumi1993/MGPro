@@ -120,8 +120,8 @@ class mgmat(object):
             grad = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
             grad /= self.dx
         elif degree == 'mod':
-            ns = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
-            we = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+            ns = -np.diff(data_expand, axis=0)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / self.dy
+            we = np.diff(data_expand, axis=1)[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1] / self.dx
             grad = np.sqrt(ns**2 + we**2)
         elif degree == '45':
             grad = np.zeros_like(data_expand)
