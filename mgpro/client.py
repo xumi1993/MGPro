@@ -51,7 +51,10 @@ Syntax: read filename dx dy [\'geo\']
             dy = float(arg_lst[2])
             to_geo = False
         elif len(arg_lst) == 4:
-            if arg_lst[4] == 'geo':
+            if arg_lst[3] == 'geo':
+                filename = arg_lst[0]
+                dx = float(arg_lst[1])
+                dy = float(arg_lst[2])
                 to_geo = True
             else:
                 print('Error: Specify \'geo\' to convert spherical coordinate to geo coordinate')
