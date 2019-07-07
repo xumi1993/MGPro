@@ -102,41 +102,65 @@ horizontal gradient in azimuth of 0, 45, 90 or 135 or module of horizontal gradi
         '''
 dt2za (z): Vertical magnetization
 
-Syntax: dt2za i0 d0
+Syntax: dt2za i0 d0 ['mem']
     i0: Magnetic dip of the region
     d0: Magnetic declination of the region
+    mem: Switch for saving Za to memory and replacing the data read before
         '''
         if len(arg.split()) == 2:
             i0, d0 = [float(value) for value in arg.split()]
             self.result = self.mg.dt2za(i0, d0)
+        elif len(arg.split()) == 3:
+            if arg.split()[2].lower() == 'mem':
+                i0, d0 = [float(value) for value in arg.split()[0:2]]
+                self.result = self.mg.dt2za(i0, d0, replace=True)
+            else:
+                print('Error: \'mem\' should be specified to save Za to memory')
+                return
         else:
-            print('Two argumrnts required')
+            print('Two or three argumrnts required')
 
     def do_dt2xa(self, arg):
         '''
 dt2xa (x): Horizontal magnetization along x direction
 
-Syntax: dt2xa i0 d0
+Syntax: dt2xa i0 d0 ['mem']
     i0: Magnetic dip of the region
     d0: Magnetic declination of the region
+    mem: Switch for saving Xa to memory and replacing the data read before
         '''
         if len(arg.split()) == 2:
             i0, d0 = [float(value) for value in arg.split()]
             self.result = self.mg.dt2xa(i0, d0)
+        elif len(arg.split()) == 3:
+            if arg.split()[2].lower() == 'mem':
+                i0, d0 = [float(value) for value in arg.split()[0:2]]
+                self.result = self.mg.dt2xa(i0, d0, replace=True)
+            else:
+                print('Error: \'mem\' should be specified to save Xa to memory')
+                return
         else:
-            print('Two argumrnts required')
+            print('Two or three argumrnts required')
 
     def do_dt2ya(self, arg):
         '''
 dt2xa (y): Horizontal magnetization along y direction
 
-Syntax: dt2ya i0 d0
+Syntax: dt2ya i0 d0 ['mem']
     i0: Magnetic dip of the region
     d0: Magnetic declination of the region
+    mem: Switch for saving Ya to memory and replacing the data read before
         '''
         if len(arg.split()) == 2:
             i0, d0 = [float(value) for value in arg.split()]
             self.result = self.mg.dt2ya(i0, d0)
+        elif len(arg.split()) == 3:
+            if arg.split()[2].lower() == 'mem':
+                i0, d0 = [float(value) for value in arg.split()[0:2]]
+                self.result = self.mg.dt2ya(i0, d0, replace=True)
+            else:
+                print('Error: \'mem\' should be specified to save Ya to memory')
+                return
         else:
             print('Two argumrnts required')
 
@@ -172,9 +196,15 @@ Syntax: write filename [\'lalo\']
         '''
 plot (p): Preview the result.
 
-Syntax: plot
+Syntax: plot [data|result]
+    Specify 'data' or 'result' to draw map view of the raw data or the result (default)
         ''' 
-        self.mg.pltmap(self.result)
+        if arg.lower() == 'data':
+            self.mg.pltmap(self.mg.data_expand[self.mg.row_begin: self.mg.row_end + 1, self.mg.col_begin: self.mg.col_end + 1])
+        elif  arg.lower() == 'result' or arg == '':
+            self.mg.pltmap(self.result)
+        else:
+            print('Error: argument should be in \'data\' and \'result\'')
 
     def completedefault(self, *args):
         readline.set_completer_delims(' \t\n;')

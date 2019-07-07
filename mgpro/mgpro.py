@@ -138,29 +138,44 @@ class mgmat(object):
         grad = np.flipud(grad)*1000
         return grad
 
-    def dt2za(self, i0, d0):
+    def dt2za(self, i0, d0, replace=False):
         P0, Q0, R0 = direction_cos(i0, d0)
         u, v = norm_uv(self.data_sf, self.dx, self.dy)
         phi = np.sqrt(u**2 + v**2) / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
         phi[np.where(np.isnan(phi))] = 0 + 0j
-        result = np.real(ifft2(ifftshift(phi * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        if not replace:
+            result = np.real(ifft2(ifftshift(phi * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        else:
+            self.data_sf = phi * self.data_sf
+            self.data_expand = np.real(ifft2(ifftshift(self.data_sf)))
+            result = self.data_expand[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         return result
 
-    def dt2xa(self, i0, d0):
+    def dt2xa(self, i0, d0, replace=False):
         P0, Q0, R0 = direction_cos(i0, d0)
         u, v = norm_uv(self.data_sf, self.dx, self.dy)
         trans_func = u*1j / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
         trans_func[np.where(np.isnan(trans_func))] = 0 + 0j
-        result = np.real(ifft2(ifftshift(trans_func * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        if not replace:
+            result = np.real(ifft2(ifftshift(trans_func * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        else:
+            self.data_sf = trans_func * self.data_sf
+            self.data_expand = np.real(ifft2(ifftshift(self.data_sf)))
+            result = self.data_expand[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         return result
 
     
-    def dt2ya(self, i0, d0):
+    def dt2ya(self, i0, d0, replace=False):
         P0, Q0, R0 = direction_cos(i0, d0)
         u, v = norm_uv(self.data_sf, self.dx, self.dy)
         trans_func = v*1j / ((P0*u + Q0*v)*1j + R0*np.sqrt(u**2 + v**2))
         trans_func[np.where(np.isnan(trans_func))] = 0 + 0j
-        result = np.real(ifft2(ifftshift(trans_func * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        if not replace:
+            result = np.real(ifft2(ifftshift(trans_func * self.data_sf)))[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
+        else:
+            self.data_sf = trans_func * self.data_sf
+            self.data_expand = np.real(ifft2(ifftshift(self.data_sf)))
+            result = self.data_expand[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         return result
 
 
