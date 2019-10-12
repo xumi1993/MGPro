@@ -1,5 +1,6 @@
 # MGPro
 [![pipeline status](https://git.nju.edu.cn/geophy/MGPro/badges/master/pipeline.svg)](https://git.nju.edu.cn/xumi1993/mgpro/commits/master)
+![PyPI](https://img.shields.io/pypi/v/mgpro)
 
 MGPro is a Python Interactive command line toolbox for processing geomagnetic and gravity data
 
