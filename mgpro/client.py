@@ -228,6 +228,7 @@ Syntax: powspec [w1, w2]
                 print('w1 should be less than w2')
             self.mg.power_fit(w1, w2)
             self.mg.plotpower()
+            self.mg.pcot = None
         else:
             print('Only two arguments can be accepted')
 
