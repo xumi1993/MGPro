@@ -201,9 +201,19 @@ Syntax: plot [data|result]
     Specify 'data' or 'result' to draw map view of the raw data or the result (default)
         ''' 
         if arg.lower() == 'data':
-            self.mg.pltmap(self.mg.data_expand[self.mg.row_begin: self.mg.row_end + 1, self.mg.col_begin: self.mg.col_end + 1])
+            try:
+                self.mg
+            except:
+                print('Error: please read data first')
+                return
+            else:
+                self.mg.pltmap(self.mg.data)
         elif  arg.lower() == 'result' or arg == '':
-            self.mg.pltmap(self.result)
+            if self.result is not None:
+                self.mg.pltmap(self.result)
+            else:
+                print('Error: No result in the memory')
+                return
         else:
             print('Error: argument should be in \'data\' and \'result\'')
     
@@ -222,14 +232,14 @@ Syntax: powspec [w1, w2]
             try:
                 w1, w2 = [float(w) for w in arg.split()]
             except:
-                print('arguments should be in float type')
+                print('Error: arguments should be in float type')
                 return
             if w1 >= w2:
-                print('w1 should be less than w2')
+                print('Error: w1 should be less than w2')
             self.mg.power_fit(w1, w2)
             self.mg.plotpower()
         else:
-            print('Only two arguments can be accepted')
+            print('Error: only two arguments can be accepted')
 
     def completedefault(self, *args):
         readline.set_completer_delims(' \t\n;')
