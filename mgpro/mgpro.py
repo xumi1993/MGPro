@@ -191,6 +191,8 @@ class mgmat(object):
         power = np.zeros_like(radfreq)
         for i, frq in enumerate(radfreq):
             power[i] = np.mean(sf_amp[np.where(omega == frq)])
+        power = power[np.where(np.logical_not(np.isnan(power)))]
+        radfreq = radfreq[np.where(np.logical_not(np.isnan(power)))]
         self.power = np.vstack((radfreq, np.log(power)))
     
     def power_fit(self, freqmin, freqmax):
