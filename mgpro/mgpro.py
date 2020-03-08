@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from scipy.fftpack import fft2, fftshift, ifft2, ifftshift
 from scipy.interpolate import griddata
+from scipy.optimize import curve_fit
 import argparse
 
 np.warnings.filterwarnings('ignore')
@@ -102,6 +103,7 @@ class mgmat(object):
         self.h = None
         self.order = None
         self.result = np.array([])
+        self.power = None
 
     def continuation(self, h, order):
         self.h = h
@@ -178,6 +180,36 @@ class mgmat(object):
             result = self.data_expand[self.row_begin: self.row_end + 1, self.col_begin: self.col_end + 1]
         return result
 
+    def power_specf(self):
+        self.pcot = None
+        sf_amp = np.abs(self.data_sf)
+        u, v = norm_uv(self.data_sf, self.dx, self.dy)
+        x_freq = u[0, :]
+        y_freq = v[:, 0]
+        omega = np.sqrt(u**2 + v**2)
+        radfreq = np.sort(np.sqrt(x_freq**2 + y_freq**2))
+        power = np.zeros_like(radfreq)
+        for i, frq in enumerate(radfreq):
+            power[i] = np.mean(sf_amp[np.where(omega == frq)])
+        self.power = np.vstack((radfreq, np.log(power)))
+    
+    def power_fit(self, freqmin, freqmax):
+        eff_idx = np.where((self.power[0] > freqmin) & (self.power[0] < freqmax))
+        self.eff_freq = self.power[0][eff_idx]
+        eff_amp = self.power[1][eff_idx]
+        self.pcot, _ = curve_fit(lambda xdata, a, b: a*xdata+b, self.eff_freq, eff_amp)
+
+    def plotpower(self):
+        fig = plt.figure()
+        fig.clf()
+        plt.grid(True)
+        plt.plot(self.power[0, :], self.power[1, :], 'r.', ms=4, alpha=0.7)
+        if self.pcot is not None:
+            line = plt.plot(self.eff_freq, self.eff_freq*self.pcot[0]+self.pcot[1], 'k', label=r"Z = {:.2f}m".format(self.pcot[0]))
+            plt.legend()
+        plt.ylabel('Amplitude')
+        plt.xlabel('Angular frequency')
+        plt.show()
 
     def pltmap(self, data, breakpoint=None):
         fig = plt.figure()
@@ -188,8 +220,8 @@ class mgmat(object):
         real_width *= frac_w
         fig.clf()
         ax_raw = fig.gca()
-        divnorm = colors.DivergingNorm(vcenter=0)
-        pcm = ax_raw.pcolor(data, cmap='jet', norm=divnorm)
+        # divnorm = colors.DivergingNorm(vcenter=0)
+        pcm = ax_raw.pcolor(data, cmap='jet')
         xticklabels = tick2label(ax_raw.get_xticks(), [self.x[0], self.x[-1]])
         yticklabels = tick2label(ax_raw.get_yticks(), [self.y[0], self.y[-1]])
         ax_raw.set_xticklabels(xticklabels)
@@ -217,4 +249,6 @@ class mgmat(object):
 
 if __name__ == '__main__':
     mg = mgmat('/Users/xumj/Codes/MGPro/example/mag_proj.dat', 2000, 2000)
-    mg.pltmap(mg.dt2ya(46, -1))
+    mg.power_specf()
+    mg.power_fit(0., 0.00015)
+    mg.plotpower()

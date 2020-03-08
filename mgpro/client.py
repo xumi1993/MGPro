@@ -19,6 +19,7 @@ class Client(Cmd):
                         'p': self.do_plot,
                         'q': self.do_quit,
                         'r': self.do_read,
+                        's': self.do_powspec,
                         'w': self.do_write,
                         'x': self.do_dt2xa,
                         'y': self.do_dt2ya,
@@ -205,6 +206,30 @@ Syntax: plot [data|result]
             self.mg.pltmap(self.result)
         else:
             print('Error: argument should be in \'data\' and \'result\'')
+    
+    def do_powspec(self, arg):
+        '''
+powspec (s): compute power spectrum of the data.
+
+Syntax: powspec [w1, w2]
+    Specify begining and ending frequency 
+        '''
+        if self.mg.power is None:
+            self.mg.power_specf()
+        if arg == '':
+            self.mg.plotpower()
+        elif len(arg.split()) == 2:
+            try:
+                w1, w2 = [float(w) for w in arg.split()]
+            except:
+                print('arguments should be in float type')
+                return
+            if w1 >= w2:
+                print('w1 should be less than w2')
+            self.mg.power_fit(w1, w2)
+            self.mg.plotpower()
+        else:
+            print('Only two arguments can be accepted')
 
     def completedefault(self, *args):
         readline.set_completer_delims(' \t\n;')
