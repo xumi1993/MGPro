@@ -209,7 +209,7 @@ class mgmat(object):
         if self.pcot is not None:
             line = plt.plot(self.eff_freq, self.eff_freq*self.pcot[0]+self.pcot[1], 'k', label=r"Z = {:.2f}m".format(self.pcot[0]))
             plt.legend()
-        plt.ylabel('Amplitude')
+        plt.ylabel('ln(Amp)')
         plt.xlabel('Angular frequency')
         plt.show()
 
